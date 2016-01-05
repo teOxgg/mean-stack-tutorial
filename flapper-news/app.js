@@ -4,7 +4,8 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
+require('./models/Posts');
+require('./models/Comments');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
@@ -12,8 +13,6 @@ var app = express();
 var mongoose = require('mongoose');
 
 //Connect to our local MongoDB instance
-require('./models/Posts');
-require('./models/Comments');
 mongoose.connect('mongodb://localhost/news');
 
 // view engine setup
