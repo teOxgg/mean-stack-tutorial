@@ -13,7 +13,9 @@ PostSchema.methods.upvote = function(cb) {
 };
 
 PostSchema.methods.downvote = function(cb) {
-	this.upvotes -= 1;
+	if (this.upvotes > 0){
+		this.upvotes -= 1;
+	}
 	this.save(cb);
 };
 
