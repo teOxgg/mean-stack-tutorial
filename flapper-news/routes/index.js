@@ -1,12 +1,13 @@
+var mongoose = require('mongoose');
 var express = require('express');
 var router = express.Router();
-var mongoose = require('mongoose');
+
 var Post = mongoose.model('Post');
 var Comment = mongoose.model('Comment');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  	res.render('index', { title: 'Express' });
+  	res.render('index');
 });
 
 module.exports = router;
@@ -29,6 +30,8 @@ router.post('/posts', function(req, res, next){
 	});
 });
 
+/* ROUTER Params handlers */
+
 router.param('post', function(req, res, next, id) {
 	var query = Post.findById(id);
 	
@@ -41,9 +44,26 @@ router.param('post', function(req, res, next, id) {
 	});
 });
 
+router.param('comment', function(req, res, next, id){
+	var query = Comment.findById(id);
+	
+	query.exec(function(err, comment){
+		if (err) {return next(err);}
+		if (!comment) {return next(new Error('can\'t find comment')); }
+		req.comment = comment;
+		return next();
+	});
+});
+
+/* Post and upvotes */
+
 router.get('/posts/:post', function(req, res){
+	req.post.populate('comments', function(err, post){
+		if (err) { return next(err); }
+	
 	res.json(req.post);
-})
+	});
+});
 
 router.put('/posts/:post/upvote', function(req, res, next) {
   	req.post.upvote(function(err, post){
@@ -52,6 +72,8 @@ router.put('/posts/:post/upvote', function(req, res, next) {
     	res.json(post);
   	});
 });
+
+/* Comment and upvotes */
 
 router.post('/posts/:post/comments', function(req, res, next) {
 	var comment = new Comment(req.body);
@@ -67,4 +89,12 @@ router.post('/posts/:post/comments', function(req, res, next) {
 			res.json(comment);
 		});
 	});
+});
+
+router.put('/posts/:post/comments/:comment/upvote', function(req, res, next) {
+  	req.comment.upvote(function(err, comment){
+    	if (err) { return next(err); }
+
+    	res.json(comment);
+  	});
 });

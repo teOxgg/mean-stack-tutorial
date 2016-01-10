@@ -4,16 +4,25 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-require('./models/Posts');
-require('./models/Comments');
-var routes = require('./routes/index');
-var users = require('./routes/users');
 
 var app = express();
+
 var mongoose = require('mongoose');
 
 //Connect to our local MongoDB instance
-mongoose.connect('mongodb://localhost/news');
+mongoose.connect('mongodb://localhost/news', function (err,db){
+	if (!err) {
+		console.log('Connected to /news!');
+	} else {
+		console.dir(err); //Failed to connect
+	}
+});
+
+require('./models/Posts');
+require('./models/Comments');
+
+var routes = require('./routes/index');
+var users = require('./routes/users');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
