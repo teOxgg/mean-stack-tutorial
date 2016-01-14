@@ -151,10 +151,11 @@ var app = angular.module('flapperNews', ['ui.router'])
 		return $http.put('/posts/' + post._id + '/upvote', null, {
 			headers: {Authorization: 'Bearer ' + auth.getToken()}
 		}).success(function(data){
-			//if (!post.upvoted.indexOf(auth.currentUser())){
+			console.log(post.upvoted.indexOf(auth.currentUser()));
+			if (post.upvoted.indexOf(auth.currentUser()) === -1){
 				post.upvotes += 1;
-			//	post.upvoted.push(auth.currentUser());
-			//}
+				post.upvoted.push(auth.currentUser());
+			}
 		});
 	};
 		
@@ -164,6 +165,7 @@ var app = angular.module('flapperNews', ['ui.router'])
 		}).success(function(data){
 			if (post.upvotes > 0){
 				post.upvotes -= 1;	
+				post.upvoted.splice(index, post.upvoted.indexOf(auth.currentUser()));
 			}
 		});
 	};
